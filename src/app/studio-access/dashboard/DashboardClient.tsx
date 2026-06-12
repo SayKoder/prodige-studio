@@ -19,6 +19,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
   const [photos,   setPhotos]   = useState(initialPhotos)
   const [saving,   setSaving]   = useState<string | null>(null)
   const [success,  setSuccess]  = useState<string | null>(null)
+  const [uploadCategorie, setUploadCategorie] = useState('portrait')
   const router = useRouter()
 
   function showSuccess(msg: string) {
@@ -92,7 +93,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
     try {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('categorie', 'portrait')
+      formData.append('categorie', uploadCategorie)
 
       const res = await fetch('/api/upload', { method: 'POST', body: formData })
       if (!res.ok) throw new Error('Upload échoué')
@@ -113,6 +114,18 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
     if (res.ok) {
       setPhotos(prev => prev.filter(p => p.id !== photo.id))
       showSuccess('Photo supprimée')
+    }
+  }
+
+  async function handleUpdateCategorie(photo: GaleriePhoto, categorie: string) {
+    const res = await fetch(`/api/galerie/${photo.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categorie }),
+    })
+    if (res.ok) {
+      setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, categorie } : p))
+      showSuccess('Catégorie mise à jour')
     }
   }
 
@@ -245,6 +258,17 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
           <div>
             <p className="label-or mb-4">Gérer les photos de la galerie</p>
 
+            <div className="flex items-center gap-3 mb-3">
+              <label className="text-xs text-gris-chaud">Catégorie :</label>
+              <select value={uploadCategorie} onChange={e => setUploadCategorie(e.target.value)}
+                className="bg-transparent border border-or/20 rounded-sm px-3 py-1.5 text-sm text-creme focus:border-or/50 focus:outline-none">
+                <option value="portrait">Portrait</option>
+                <option value="mariage">Mariage</option>
+                <option value="evenement">Événement</option>
+                <option value="pro">Pro / Corporate</option>
+              </select>
+            </div>
+
             <label className="block border-2 border-dashed border-or/20 rounded-sm p-8 text-center cursor-pointer hover:border-or/40 transition-colors mb-6">
               <input type="file" accept="image/*" onChange={handleUpload} className="hidden" disabled={saving === 'upload'} />
               <p className="text-sm text-gris-chaud">
@@ -257,10 +281,17 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
               {photos.map(photo => (
                 <div key={photo.id} className="relative border border-or/10 rounded-sm overflow-hidden aspect-square group">
                   <img src={photo.url_publique} alt={photo.titre} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-noir/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <span className="text-xs text-creme">{photo.categorie}</span>
+                  <div className="absolute inset-0 bg-noir/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                    <select value={photo.categorie}
+                      onChange={e => handleUpdateCategorie(photo, e.target.value)}
+                      className="bg-noir border border-or/40 rounded-sm px-2 py-1 text-xs text-creme w-full focus:outline-none">
+                      <option value="portrait">Portrait</option>
+                      <option value="mariage">Mariage</option>
+                      <option value="evenement">Événement</option>
+                      <option value="pro">Pro / Corporate</option>
+                    </select>
                     <button onClick={() => handleDeletePhoto(photo)}
-                      className="text-xs text-red-400 hover:text-red-300 border border-red-400/50 px-2 py-1 rounded-sm">
+                      className="text-xs text-red-400 hover:text-red-300 border border-red-400/50 px-2 py-1 rounded-sm w-full">
                       Supprimer
                     </button>
                   </div>
