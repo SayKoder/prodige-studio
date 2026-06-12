@@ -24,9 +24,10 @@ RUN apk add --no-cache openssl \
  && adduser  --system --uid 1001 nextjs
 
 # Prisma client + CLI (pour migrate deploy au démarrage)
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma  ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma  ./node_modules/@prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma   ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma    ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma    ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma     ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bcryptjs   ./node_modules/bcryptjs
 COPY --chown=nextjs:nodejs prisma ./prisma
 
 # Next.js standalone output
