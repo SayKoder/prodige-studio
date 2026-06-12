@@ -1,5 +1,13 @@
 import type { Metadata } from 'next'
+import { Cinzel } from 'next/font/google'
 import './globals.css'
+
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  weight: ['600'],
+  variable: '--font-cinzel',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Prodige Studio — Photographie & Vidéo',
@@ -14,7 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body className={cinzel.variable}>{children}</body>
     </html>
   )
 }
