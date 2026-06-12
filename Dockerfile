@@ -19,14 +19,15 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs \
+RUN apk add --no-cache openssl \
+ && addgroup --system --gid 1001 nodejs \
  && adduser  --system --uid 1001 nextjs
 
 # Prisma client + CLI (pour migrate deploy au démarrage)
-COPY --from=builder /app/node_modules/.prisma  ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma  ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma   ./node_modules/prisma
-COPY prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma  ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma  ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma   ./node_modules/prisma
+COPY --chown=nextjs:nodejs prisma ./prisma
 
 # Next.js standalone output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
