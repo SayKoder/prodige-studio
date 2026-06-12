@@ -1,4 +1,4 @@
-# Prodige Studio — Portfolio Photographe
+# Prodige Studio - Portfolio Photographe
 
 Portfolio cinématographique avec back-office d'administration.
 Déployé sur DigitalOcean via Docker + Traefik + Let's Encrypt.
