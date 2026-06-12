@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { requireAuth } from '@/lib/auth'
 import DashboardClient from './DashboardClient'
 import { getAllForfaits, getAllSiteTextes, getGaleriePhotos } from '@/lib/db'

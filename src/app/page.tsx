@@ -5,7 +5,7 @@ import Forfaits from '@/components/public/Forfaits'
 import { About, Footer } from '@/components/public/AboutFooter'
 import { getForfaits, getSiteTextes, getGaleriePhotos } from '@/lib/db'
 
-export const revalidate = 60 // Revalide toutes les 60s (ISR)
+export const dynamic = 'force-dynamic'
 
 export default async function Home() {
   const [forfaits, textes, photos] = await Promise.all([
