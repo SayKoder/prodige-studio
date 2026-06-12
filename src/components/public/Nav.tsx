@@ -6,9 +6,8 @@ export default function Nav() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-5 border-b border-or/20 bg-noir/90 backdrop-blur-sm">
-      <a href="#hero" className="flex items-baseline gap-0">
-        <span className="font-serif text-xl font-light tracking-widest text-creme">PRODIGE</span>
-        <span className="font-serif text-xl font-semibold tracking-widest text-or"> STUDIO</span>
+      <a href="#hero">
+        <img src="/logo.svg" alt="Prodige Studio" className="h-10 w-auto" />
       </a>
 
       {/* Desktop */}

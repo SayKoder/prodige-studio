@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import type { GaleriePhoto } from '@/lib/db'
 
 const CATEGORIES = ['corporate', 'mariage', 'nature', 'portrait', 'evenement'] as const
@@ -23,9 +24,9 @@ export default function Galerie({ photos }: GalerieProps) {
           <p className="label-or mb-2">Portfolio sélectionné</p>
           <h2 className="font-serif text-3xl font-light text-creme">Galerie</h2>
         </div>
-        <span className="text-xs tracking-widest text-or border-b border-or/30 pb-0.5 cursor-pointer hover:border-or transition-colors">
+        <Link href="/galerie" className="text-xs tracking-widest text-or border-b border-or/30 pb-0.5 hover:border-or transition-colors">
           TOUT VOIR →
-        </span>
+        </Link>
       </div>
 
       {photos.length === 0 ? (
