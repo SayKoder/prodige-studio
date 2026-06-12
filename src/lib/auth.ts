@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from './db'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
