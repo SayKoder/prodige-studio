@@ -1,0 +1,42 @@
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+
+services:
+  # ─── Next.js en mode développement ───────────────────────────────────────
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file: .env.local
+    volumes:
+      - ./public/uploads:/app/public/uploads
+    networks:
+      - internal
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ─── PostgreSQL exposé localement ────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: prodige_dev
+      POSTGRES_USER: prodige
+      POSTGRES_PASSWORD: devpassword
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prodige -d prodige_dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 5

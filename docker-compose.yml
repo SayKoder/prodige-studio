@@ -1,0 +1,85 @@
+networks:
+  web:
+    external: true
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  traefik_certs:
+
+services:
+  # ─── Reverse proxy + SSL automatique ─────────────────────────────────────
+  traefik:
+    image: traefik:v3
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Redirection HTTP → HTTPS globale
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # Let's Encrypt via HTTP challenge
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=carl.heintz02@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/certs/acme.json"
+      # Dashboard désactivé en prod
+      - "--api=false"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "traefik_certs:/certs"
+    networks:
+      - web
+    restart: unless-stopped
+
+  # ─── Application Next.js ──────────────────────────────────────────────────
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./public/uploads:/app/public/uploads
+    networks:
+      - web
+      - internal
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+      # Router HTTPS
+      - "traefik.http.routers.prodige.rule=Host(`prodige-studio.me`) || Host(`www.prodige-studio.me`)"
+      - "traefik.http.routers.prodige.entrypoints=websecure"
+      - "traefik.http.routers.prodige.tls.certresolver=letsencrypt"
+      - "traefik.http.services.prodige.loadbalancer.server.port=3000"
+      # Middleware : www → apex redirect
+      - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.prodige-studio\\.me/(.*)"
+      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://prodige-studio.me/$${1}"
+      - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"
+      - "traefik.http.routers.prodige.middlewares=www-redirect"
+    restart: unless-stopped
+
+  # ─── Base de données (réseau interne uniquement) ──────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-prodige}
+      POSTGRES_USER: ${POSTGRES_USER:-prodige}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-prodige} -d ${POSTGRES_DB:-prodige}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
