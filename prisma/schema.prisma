@@ -50,6 +50,7 @@ model GaleriePhoto {
   storagePath String
   urlPublique String
   actif       Boolean  @default(true)
+  hero        Boolean  @default(false)
   ordre       Int      @default(0)
   createdAt   DateTime @default(now())
 

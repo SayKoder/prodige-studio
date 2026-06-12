@@ -37,6 +37,7 @@ export type GaleriePhoto = {
   storage_path: string
   url_publique: string
   actif: boolean
+  hero: boolean
   ordre: number
 }
 
@@ -57,9 +58,9 @@ function mapSiteTexte(t: {
 
 function mapPhoto(p: {
   id: string; titre: string; categorie: string; storagePath: string
-  urlPublique: string; actif: boolean; ordre: number
+  urlPublique: string; actif: boolean; hero: boolean; ordre: number
 }): GaleriePhoto {
-  return { id: p.id, titre: p.titre, categorie: p.categorie, storage_path: p.storagePath, url_publique: p.urlPublique, actif: p.actif, ordre: p.ordre }
+  return { id: p.id, titre: p.titre, categorie: p.categorie, storage_path: p.storagePath, url_publique: p.urlPublique, actif: p.actif, hero: p.hero, ordre: p.ordre }
 }
 
 // ─── Requêtes publiques ───────────────────────────────────────────────────────
@@ -81,6 +82,15 @@ export async function getGaleriePhotos(): Promise<GaleriePhoto[]> {
   const rows = await prisma.galeriePhoto.findMany({
     where: { actif: true },
     orderBy: { ordre: 'asc' },
+  })
+  return rows.map(mapPhoto)
+}
+
+export async function getHeroPhotos(): Promise<GaleriePhoto[]> {
+  const rows = await prisma.galeriePhoto.findMany({
+    where: { actif: true, hero: true },
+    orderBy: { ordre: 'asc' },
+    take: 3,
   })
   return rows.map(mapPhoto)
 }

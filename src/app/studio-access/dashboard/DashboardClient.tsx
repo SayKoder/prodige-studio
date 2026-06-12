@@ -129,6 +129,23 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
     }
   }
 
+  async function handleToggleHero(photo: GaleriePhoto) {
+    const heroCount = photos.filter(p => p.hero).length
+    if (!photo.hero && heroCount >= 3) {
+      showSuccess('Maximum 3 photos en hero — désélectionnes-en une d\'abord')
+      return
+    }
+    const res = await fetch(`/api/galerie/${photo.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hero: !photo.hero }),
+    })
+    if (res.ok) {
+      setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, hero: !p.hero } : p))
+      showSuccess(photo.hero ? 'Retirée du hero' : 'Ajoutée au hero !')
+    }
+  }
+
   const tabs: { key: Tab; label: string }[] = [
     { key: 'forfaits', label: 'Forfaits & Prix'   },
     { key: 'textes',   label: 'Textes du site'    },
@@ -281,6 +298,11 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
               {photos.map(photo => (
                 <div key={photo.id} className="relative border border-or/10 rounded-sm overflow-hidden aspect-square group">
                   <img src={photo.url_publique} alt={photo.titre} className="w-full h-full object-cover" />
+                  {photo.hero && (
+                    <div className="absolute top-2 right-2 bg-or text-noir text-xs px-1.5 py-0.5 rounded-sm font-medium">
+                      HERO
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-noir/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
                     <select value={photo.categorie}
                       onChange={e => handleUpdateCategorie(photo, e.target.value)}
@@ -290,6 +312,14 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
                       <option value="evenement">Événement</option>
                       <option value="pro">Pro / Corporate</option>
                     </select>
+                    <button onClick={() => handleToggleHero(photo)}
+                      className={`text-xs px-2 py-1 rounded-sm w-full border transition-colors ${
+                        photo.hero
+                          ? 'text-or border-or/60 hover:bg-or/10'
+                          : 'text-gris-chaud border-or/20 hover:border-or/50 hover:text-or'
+                      }`}>
+                      {photo.hero ? '★ Retirer du hero' : '☆ Mettre en hero'}
+                    </button>
                     <button onClick={() => handleDeletePhoto(photo)}
                       className="text-xs text-red-400 hover:text-red-300 border border-red-400/50 px-2 py-1 rounded-sm w-full">
                       Supprimer
