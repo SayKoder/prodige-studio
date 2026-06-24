@@ -52,6 +52,47 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
     router.refresh()
   }
 
+  async function handleCreateForfait(categorie: string) {
+    setSaving('new')
+    const res = await fetch('/api/forfaits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        categorie,
+        nom:      'Nouveau forfait',
+        prix:     'Sur devis',
+        details:  ['Détail 1', 'Détail 2'],
+        actif:    true,
+        populaire: false,
+      }),
+    })
+    setSaving(null)
+    if (res.ok) {
+      const created = await res.json()
+      setForfaits(prev => [...prev, {
+        id:        created.id,
+        categorie: created.categorie,
+        nom:       created.nom,
+        sous_titre: created.sousTitre ?? null,
+        prix:      created.prix,
+        details:   created.details,
+        populaire: created.populaire,
+        actif:     created.actif,
+        ordre:     created.ordre,
+      }])
+      showSuccess('Forfait créé')
+    }
+  }
+
+  async function handleDeleteForfait(f: Forfait) {
+    if (!confirm(`Supprimer "${f.nom}" ?`)) return
+    const res = await fetch(`/api/forfaits/${f.id}`, { method: 'DELETE' })
+    if (res.ok) {
+      setForfaits(prev => prev.filter(x => x.id !== f.id))
+      showSuccess('Forfait supprimé')
+    }
+  }
+
   function updateForfaitField(id: string, field: keyof Forfait, value: unknown) {
     setForfaits(prev => prev.map(f => f.id === id ? { ...f, [field]: value } : f))
   }
@@ -192,9 +233,15 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
 
             {['portraits_evenements', 'grands_forfaits'].map(cat => (
               <div key={cat}>
-                <p className="text-xs tracking-widest text-gris-chaud mb-3 mt-6">
-                  {cat === 'portraits_evenements' ? 'PORTRAITS & ÉVÉNEMENTS' : 'GRANDS FORFAITS'}
-                </p>
+                <div className="flex items-center justify-between mb-3 mt-6">
+                  <p className="text-xs tracking-widest text-gris-chaud">
+                    {cat === 'portraits_evenements' ? 'PORTRAITS & ÉVÉNEMENTS' : 'GRANDS FORFAITS'}
+                  </p>
+                  <button onClick={() => handleCreateForfait(cat)} disabled={saving === 'new'}
+                    className="text-xs text-or border border-or/30 px-3 py-1 rounded-sm hover:border-or hover:bg-or/5 transition-colors disabled:opacity-50">
+                    + Ajouter un forfait
+                  </button>
+                </div>
                 {forfaits.filter(f => f.categorie === cat).map(f => (
                   <div key={f.id} className="border border-or/15 rounded-sm p-5 mb-3 space-y-3">
                     <div className="grid grid-cols-2 gap-3">
@@ -235,7 +282,11 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
                           className="w-full bg-transparent border border-or/15 rounded-sm px-3 py-1.5 text-xs text-gris-sombre focus:border-or/40 focus:outline-none mb-1.5" />
                       ))}
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex justify-between">
+                      <button onClick={() => handleDeleteForfait(f)}
+                        className="text-xs text-red-400 hover:text-red-300 border border-red-400/30 hover:border-red-400/60 px-4 py-2 rounded-sm transition-colors">
+                        Supprimer
+                      </button>
                       <button onClick={() => saveForfait(f)} disabled={saving === f.id}
                         className="bg-or text-noir text-xs tracking-widest px-5 py-2 rounded-sm font-medium hover:bg-or-light disabled:opacity-50 transition-colors">
                         {saving === f.id ? 'SAUVEGARDE...' : 'SAUVEGARDER'}
