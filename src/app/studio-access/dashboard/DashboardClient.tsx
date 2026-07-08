@@ -1,10 +1,13 @@
 'use client'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import type { Forfait, SiteTexte, GaleriePhoto } from '@/lib/db'
 
 type Tab = 'forfaits' | 'textes' | 'galerie'
+
+type RatioCadrage = 'portrait' | 'paysage'
+const RATIOS: Record<RatioCadrage, number> = { portrait: 3 / 4, paysage: 4 / 3 }
 
 type Props = {
   forfaits: Forfait[]
@@ -187,11 +190,16 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
     }
   }
 
-  async function handleSetFocal(photo: GaleriePhoto, e: React.MouseEvent<HTMLDivElement>) {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const focalX = Math.round(Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100)))
-    const focalY = Math.round(Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100)))
+  const [cropping, setCropping] = useState<GaleriePhoto | null>(null)
+  const [ratioCadrage, setRatioCadrage] = useState<RatioCadrage>('portrait')
+  const [draftFocal, setDraftFocal] = useState({ x: 50, y: 50 })
 
+  function openCropModal(photo: GaleriePhoto) {
+    setDraftFocal({ x: photo.focal_x, y: photo.focal_y })
+    setCropping(photo)
+  }
+
+  async function handleSaveFocal(photo: GaleriePhoto, focalX: number, focalY: number) {
     const res = await fetch(`/api/galerie/${photo.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -199,7 +207,8 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
     })
     if (res.ok) {
       setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, focal_x: focalX, focal_y: focalY } : p))
-      showSuccess('Cadrage mis à jour')
+      showSuccess('Cadrage enregistré')
+      setCropping(null)
     }
   }
 
@@ -362,7 +371,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
             </label>
 
             <p className="text-xs text-gris-tres-sombre mb-3">
-              Survolez une photo puis cliquez dessus pour choisir la zone à toujours garder visible au recadrage (visage, sujet...).
+              Survolez une photo pour la modifier. « Recadrer » ouvre un aperçu aux proportions réelles du site.
             </p>
 
             <div className="grid grid-cols-3 gap-3">
@@ -379,38 +388,31 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
                       HERO
                     </div>
                   )}
-                  {/* Marqueur du point focal actuel */}
-                  <div
-                    className="absolute w-3 h-3 -ml-1.5 -mt-1.5 rounded-full border-2 border-or bg-noir/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                    style={{ left: `${photo.focal_x}%`, top: `${photo.focal_y}%` }}
-                  />
-                  <div
-                    onClick={e => handleSetFocal(photo, e)}
-                    title="Cliquer pour choisir la zone à garder visible"
-                    className="absolute inset-0 bg-noir/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2 cursor-crosshair">
-                    <span className="text-xs text-creme/60 tracking-wide pointer-events-none">Cliquer pour cadrer</span>
-                    <div className="flex flex-col items-center gap-2 w-full mt-1" onClick={e => e.stopPropagation()}>
-                      <select value={photo.categorie}
-                        onChange={e => handleUpdateCategorie(photo, e.target.value)}
-                        className="bg-noir border border-or/40 rounded-sm px-2 py-1 text-xs text-creme w-full focus:outline-none">
-                        <option value="portrait">Portrait</option>
-                        <option value="mariage">Mariage</option>
-                        <option value="evenement">Événement</option>
-                        <option value="pro">Pro / Corporate</option>
-                      </select>
-                      <button onClick={() => handleToggleHero(photo)}
-                        className={`text-xs px-2 py-1 rounded-sm w-full border transition-colors ${
-                          photo.hero
-                            ? 'text-or border-or/60 hover:bg-or/10'
-                            : 'text-gris-chaud border-or/20 hover:border-or/50 hover:text-or'
-                        }`}>
-                        {photo.hero ? '★ Retirer du hero' : '☆ Mettre en hero'}
-                      </button>
-                      <button onClick={() => handleDeletePhoto(photo)}
-                        className="text-xs text-red-400 hover:text-red-300 border border-red-400/50 px-2 py-1 rounded-sm w-full">
-                        Supprimer
-                      </button>
-                    </div>
+                  <div className="absolute inset-0 bg-noir/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                    <button onClick={() => openCropModal(photo)}
+                      className="text-xs text-or border border-or/50 px-2 py-1 rounded-sm w-full hover:bg-or/10 transition-colors">
+                      ⤢ Recadrer
+                    </button>
+                    <select value={photo.categorie}
+                      onChange={e => handleUpdateCategorie(photo, e.target.value)}
+                      className="bg-noir border border-or/40 rounded-sm px-2 py-1 text-xs text-creme w-full focus:outline-none">
+                      <option value="portrait">Portrait</option>
+                      <option value="mariage">Mariage</option>
+                      <option value="evenement">Événement</option>
+                      <option value="pro">Pro / Corporate</option>
+                    </select>
+                    <button onClick={() => handleToggleHero(photo)}
+                      className={`text-xs px-2 py-1 rounded-sm w-full border transition-colors ${
+                        photo.hero
+                          ? 'text-or border-or/60 hover:bg-or/10'
+                          : 'text-gris-chaud border-or/20 hover:border-or/50 hover:text-or'
+                      }`}>
+                      {photo.hero ? '★ Retirer du hero' : '☆ Mettre en hero'}
+                    </button>
+                    <button onClick={() => handleDeletePhoto(photo)}
+                      className="text-xs text-red-400 hover:text-red-300 border border-red-400/50 px-2 py-1 rounded-sm w-full">
+                      Supprimer
+                    </button>
                   </div>
                   <p className="absolute bottom-2 left-2 text-xs text-creme/60 truncate max-w-full px-1 pointer-events-none">{photo.titre}</p>
                 </div>
@@ -425,6 +427,118 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
           </div>
         )}
       </div>
+
+      {cropping && (
+        <div className="fixed inset-0 z-50 bg-noir/90 flex items-center justify-center p-6" onClick={() => setCropping(null)}>
+          <div className="bg-noir border border-or/20 rounded-sm p-6 max-w-lg w-full" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-creme truncate pr-4">Cadrage · {cropping.titre}</p>
+              <button onClick={() => setCropping(null)} className="text-gris-chaud hover:text-creme text-lg leading-none flex-shrink-0">✕</button>
+            </div>
+
+            <div className="flex gap-2 mb-4">
+              {(['portrait', 'paysage'] as RatioCadrage[]).map(r => (
+                <button key={r} onClick={() => setRatioCadrage(r)}
+                  className={`text-xs tracking-widest px-3 py-1.5 rounded-sm border transition-colors ${
+                    ratioCadrage === r
+                      ? 'text-or border-or/60 bg-or/10'
+                      : 'text-gris-chaud border-or/20 hover:border-or/40'
+                  }`}>
+                  {r === 'portrait' ? 'PORTRAIT · HAUT DE PAGE' : 'PAYSAGE · GALERIE'}
+                </button>
+              ))}
+            </div>
+
+            <CropStage key={cropping.id} photo={cropping} ratio={RATIOS[ratioCadrage]} focal={draftFocal} onChange={setDraftFocal} />
+
+            <p className="text-xs text-gris-tres-sombre mt-3">
+              Faites glisser directement sur la photo pour choisir la zone à toujours garder visible.
+            </p>
+
+            <div className="flex justify-end gap-2 mt-5">
+              <button onClick={() => setCropping(null)} className="text-xs text-gris-chaud px-4 py-2 hover:text-creme transition-colors">
+                Annuler
+              </button>
+              <button onClick={() => handleSaveFocal(cropping, draftFocal.x, draftFocal.y)}
+                className="bg-or text-noir text-xs tracking-widest px-5 py-2 rounded-sm font-medium hover:bg-or-light transition-colors">
+                ENREGISTRER
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+type CropStageProps = {
+  photo: GaleriePhoto
+  ratio: number
+  focal: { x: number; y: number }
+  onChange: (focal: { x: number; y: number }) => void
+}
+
+function CropStage({ photo, ratio, focal, onChange }: CropStageProps) {
+  const stageRef = useRef<HTMLDivElement>(null)
+  const [stageSize, setStageSize] = useState({ width: 0, height: 0 })
+  const [dragging, setDragging] = useState(false)
+
+  function mesurer() {
+    const rect = stageRef.current?.getBoundingClientRect()
+    if (rect) setStageSize({ width: rect.width, height: rect.height })
+  }
+
+  function positionDepuisPointeur(clientX: number, clientY: number) {
+    const rect = stageRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const x = Math.round(Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100)))
+    const y = Math.round(Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100)))
+    onChange({ x, y })
+  }
+
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    setDragging(true)
+    e.currentTarget.setPointerCapture(e.pointerId)
+    positionDepuisPointeur(e.clientX, e.clientY)
+  }
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!dragging) return
+    positionDepuisPointeur(e.clientX, e.clientY)
+  }
+
+  const winWidth = stageSize.width && stageSize.height
+    ? Math.min(stageSize.width, stageSize.height * ratio) * 0.65
+    : 0
+  const winHeight = winWidth / ratio
+
+  const winLeft = Math.min(Math.max((focal.x / 100) * stageSize.width - winWidth / 2, 0), stageSize.width - winWidth)
+  const winTop  = Math.min(Math.max((focal.y / 100) * stageSize.height - winHeight / 2, 0), stageSize.height - winHeight)
+
+  return (
+    <div
+      ref={stageRef}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={() => setDragging(false)}
+      className="relative w-full select-none cursor-crosshair rounded-sm overflow-hidden border border-or/15 touch-none">
+      <img
+        src={photo.url_publique}
+        alt={photo.titre}
+        onLoad={mesurer}
+        className="w-full h-auto block pointer-events-none"
+        draggable={false}
+      />
+      {stageSize.width > 0 && (
+        <div
+          className="absolute border-2 border-or pointer-events-none"
+          style={{ width: winWidth, height: winHeight, left: winLeft, top: winTop, boxShadow: '0 0 0 9999px rgba(10, 9, 8, 0.65)' }}
+        />
+      )}
+      <div
+        className="absolute w-3 h-3 -ml-1.5 -mt-1.5 rounded-full bg-or border-2 border-noir pointer-events-none"
+        style={{ left: `${focal.x}%`, top: `${focal.y}%` }}
+      />
     </div>
   )
 }
