@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { contactSchema } from '@/lib/validation/contact'
+import { domainePeutRecevoirDuCourrier } from '@/lib/validation/emailDomaine'
 import { envoyerEmailsContact } from '@/lib/email'
 
 const LIMITE_PAR_HEURE = 5
@@ -38,6 +39,14 @@ export async function POST(req: NextRequest) {
   }
 
   const donnees = analyse.data
+
+  const domaineValide = await domainePeutRecevoirDuCourrier(donnees.email)
+  if (!domaineValide) {
+    return NextResponse.json(
+      { erreur: 'Champs invalides.', details: { fieldErrors: { email: ['Ce domaine ne semble pas pouvoir recevoir de courrier.'] } } },
+      { status: 400 },
+    )
+  }
 
   await prisma.demandeContact.create({
     data: {

@@ -27,20 +27,26 @@ export async function envoyerEmailsContact(donnees: ContactInput) {
   const destinataire = process.env.CONTACT_EMAIL_TO || 'carl.heintz02@gmail.com'
   const prestation = donnees.prestation ? LABELS_PRESTATION[donnees.prestation] ?? donnees.prestation : 'Non précisée'
 
-  await resend.emails.send({
+  const notification = await resend.emails.send({
     from: expediteur,
     to: destinataire,
     replyTo: donnees.email,
     subject: `Nouvelle demande · ${donnees.nom}`,
     html: gabaritInterne({ ...donnees, prestation }),
   })
+  if (notification.error) {
+    console.error('Échec envoi notification interne (Resend)', notification.error)
+  }
 
-  await resend.emails.send({
+  const confirmation = await resend.emails.send({
     from: expediteur,
     to: donnees.email,
     subject: 'Votre message a bien été reçu · Prodige Studio',
     html: gabaritConfirmation(donnees.nom),
   })
+  if (confirmation.error) {
+    console.error('Échec envoi confirmation client (Resend)', confirmation.error)
+  }
 }
 
 function gabaritInterne(d: Omit<ContactInput, 'prestation'> & { prestation: string }) {
