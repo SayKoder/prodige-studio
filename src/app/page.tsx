@@ -2,17 +2,20 @@ import Nav from '@/components/public/Nav'
 import Hero from '@/components/public/Hero'
 import Galerie from '@/components/public/Galerie'
 import Forfaits from '@/components/public/Forfaits'
+import Avis from '@/components/public/Avis'
 import { About, Footer } from '@/components/public/AboutFooter'
 import { getForfaits, getSiteTextes, getGaleriePhotos, getHeroPhotos } from '@/lib/db'
+import { getAvisGoogle } from '@/lib/avis'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  const [forfaits, textes, photos, heroPhotos] = await Promise.all([
+  const [forfaits, textes, photos, heroPhotos, avis] = await Promise.all([
     getForfaits(),
     getSiteTextes(),
     getGaleriePhotos(),
     getHeroPhotos(),
+    getAvisGoogle(),
   ])
 
   return (
@@ -21,6 +24,7 @@ export default async function Home() {
       <Hero textes={textes} heroPhotos={heroPhotos} />
       <Galerie photos={photos} />
       <Forfaits forfaits={forfaits} />
+      <Avis avis={avis} textes={textes} />
       <About textes={textes} />
       <Footer textes={textes} />
     </main>

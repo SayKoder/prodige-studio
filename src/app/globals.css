@@ -3,37 +3,122 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Jetons de couleur : triplets RGB (pas de hex) pour que Tailwind puisse
+ * injecter l'alpha via `rgb(var(--x) / <alpha-value>)` (voir tailwind.config.js).
+ * Le nom du jeton reste stable ; sa valeur change selon le thème.
+ */
 :root {
-  --or: #c9a84c;
-  --noir: #0a0a08;
-  --creme: #f5f0e8;
+  --noir: 10 9 8;
+  --noir-2: 21 19 15;
+  --noir-3: 27 24 16;
+  --or: 199 160 82;
+  --or-light: 230 200 120;
+  --creme: 242 236 225;
+  --gris-chaud: 148 140 122;
+  --gris-sombre: 106 100 88;
+  --gris-tres-sombre: 74 69 62;
+  color-scheme: dark;
+}
+
+/*
+ * Attribut simple (pas restreint à :root) : permet de forcer un thème sur un
+ * conteneur imbriqué (ex. le back-office, toujours sombre) sans dépendre du
+ * cookie du site public.
+ */
+[data-theme='light'] {
+  --noir: 247 242 233;
+  --noir-2: 239 231 215;
+  --noir-3: 255 253 248;
+  --or: 138 106 36;
+  --or-light: 169 130 47;
+  --creme: 33 29 22;
+  --gris-chaud: 107 99 84;
+  --gris-sombre: 143 134 114;
+  --gris-tres-sombre: 176 166 142;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --noir: 10 9 8;
+  --noir-2: 21 19 15;
+  --noir-3: 27 24 16;
+  --or: 199 160 82;
+  --or-light: 230 200 120;
+  --creme: 242 236 225;
+  --gris-chaud: 148 140 122;
+  --gris-sombre: 106 100 88;
+  --gris-tres-sombre: 74 69 62;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']):not([data-theme='light']) {
+    --noir: 247 242 233;
+    --noir-2: 239 231 215;
+    --noir-3: 255 253 248;
+    --or: 138 106 36;
+    --or-light: 169 130 47;
+    --creme: 33 29 22;
+    --gris-chaud: 107 99 84;
+    --gris-sombre: 143 134 114;
+    --gris-tres-sombre: 176 166 142;
+    color-scheme: light;
+  }
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
-  background-color: #0a0a08;
-  color: #f5f0e8;
+  background-color: rgb(var(--noir));
+  color: rgb(var(--creme));
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .font-serif {
   font-family: 'Cormorant Garamond', serif;
 }
 
+:focus-visible {
+  outline: 2px solid rgb(var(--or));
+  outline-offset: 2px;
+}
+
 /* Scrollbar discrète */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0a0a08; }
-::-webkit-scrollbar-thumb { background: rgba(201, 168, 76, 0.3); border-radius: 2px; }
+::-webkit-scrollbar-track { background: rgb(var(--noir)); }
+::-webkit-scrollbar-thumb { background: rgb(var(--or) / 0.3); border-radius: 2px; }
 
 /* Label doré réutilisable */
 .label-or {
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #c9a84c;
+  color: rgb(var(--or));
   font-weight: 400;
+}
+
+/* Champ honeypot : masqué visuellement mais toujours dans le flux du DOM */
+.champ-piege {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

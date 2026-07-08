@@ -8,19 +8,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        noir: '#0a0a08',
-        'noir-2': '#0f0e0b',
-        'noir-3': '#1a1610',
-        or: '#c9a84c',
-        'or-light': '#e8cc88',
-        creme: '#f5f0e8',
-        'gris-chaud': '#9a9485',
-        'gris-sombre': '#6a6458',
-        'gris-tres-sombre': '#4a453e',
+        // Jetons pilotés par variables CSS (voir globals.css) : une seule classe
+        // Tailwind (bg-noir, text-or, border-or/20...) sert les deux thèmes.
+        noir: 'rgb(var(--noir) / <alpha-value>)',
+        'noir-2': 'rgb(var(--noir-2) / <alpha-value>)',
+        'noir-3': 'rgb(var(--noir-3) / <alpha-value>)',
+        or: 'rgb(var(--or) / <alpha-value>)',
+        'or-light': 'rgb(var(--or-light) / <alpha-value>)',
+        creme: 'rgb(var(--creme) / <alpha-value>)',
+        'gris-chaud': 'rgb(var(--gris-chaud) / <alpha-value>)',
+        'gris-sombre': 'rgb(var(--gris-sombre) / <alpha-value>)',
+        'gris-tres-sombre': 'rgb(var(--gris-tres-sombre) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         serif: ['Cormorant Garamond', 'serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
       letterSpacing: {
         wider: '0.15em',

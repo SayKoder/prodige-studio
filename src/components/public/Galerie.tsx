@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { GaleriePhoto } from '@/lib/db'
+import CornerFrame from './CornerFrame'
 
 const CATEGORIES = ['corporate', 'mariage', 'nature', 'portrait', 'evenement'] as const
 
@@ -42,7 +43,7 @@ export default function Galerie({ photos }: GalerieProps) {
             <div
               key={label}
               className={`relative border border-or/10 rounded-sm flex items-end p-3 ${span ? 'row-span-2' : ''}`}
-              style={{ background: 'linear-gradient(135deg, #1a1813, #242018)' }}
+              style={{ background: 'linear-gradient(135deg, rgb(var(--noir-2)), rgb(var(--noir-3)))' }}
             >
               <span className="text-xs tracking-widest text-or/40">{label}</span>
             </div>
@@ -52,22 +53,24 @@ export default function Galerie({ photos }: GalerieProps) {
         // Vraies photos
         <div className="grid gap-1.5" style={{ gridTemplateColumns: '2fr 1fr 1fr', gridTemplateRows: '200px 150px' }}>
           {photosPrincipales.map((photo, i) => (
-            <div
+            <CornerFrame
               key={photo.id}
-              className={`relative border border-or/10 rounded-sm overflow-hidden group ${i === 0 ? 'row-span-2' : ''}`}
+              className={`border border-or/10 rounded-sm overflow-hidden ${i === 0 ? 'row-span-2' : ''}`}
             >
-              <Image
-                src={photo.url_publique}
-                alt={photo.titre}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes={i === 0 ? '40vw' : '20vw'}
-              />
-              <div className="absolute inset-0 bg-noir/20 group-hover:bg-noir/10 transition-colors duration-300" />
-              <span className="absolute bottom-3 left-3 text-xs tracking-widest text-creme/60">
-                {photo.categorie.toUpperCase()}
-              </span>
-            </div>
+              <div className="relative w-full h-full group">
+                <Image
+                  src={photo.url_publique}
+                  alt={photo.titre}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  sizes={i === 0 ? '40vw' : '20vw'}
+                />
+                <div className="absolute inset-0 bg-noir/20 group-hover:bg-noir/10 transition-colors duration-300" />
+                <span className="absolute bottom-3 left-3 text-xs tracking-widest text-creme/60">
+                  {photo.categorie.toUpperCase()}
+                </span>
+              </div>
+            </CornerFrame>
           ))}
         </div>
       )}

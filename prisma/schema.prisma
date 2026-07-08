@@ -56,3 +56,27 @@ model GaleriePhoto {
 
   @@map("galerie_photos")
 }
+
+model DemandeContact {
+  id         String   @id @default(cuid())
+  nom        String
+  email      String
+  telephone  String?
+  prestation String?
+  message    String
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@map("demandes_contact")
+}
+
+model AvisGoogle {
+  id        String   @id @default(cuid())
+  auteur    String
+  note      Int
+  texte     String
+  publieLe  String?
+  updatedAt DateTime @updatedAt
+
+  @@map("avis_google")
+}

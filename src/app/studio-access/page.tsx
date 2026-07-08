@@ -27,7 +27,7 @@ export default function StudioAccess() {
   }
 
   return (
-    <div className="min-h-screen bg-noir flex items-center justify-center px-4">
+    <div data-theme="dark" className="min-h-screen bg-noir flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
 
         {/* Logo */}

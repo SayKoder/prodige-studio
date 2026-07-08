@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import type { GaleriePhoto } from '@/lib/db'
+import CornerFrame from './CornerFrame'
 
 type HeroProps = {
   textes: Record<string, string>
@@ -11,7 +12,7 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
 
   return (
     <section id="hero" className="grid grid-cols-1 md:grid-cols-2 min-h-screen pt-16"
-      style={{ background: 'linear-gradient(160deg, #0f0e0b 0%, #1a1610 60%, #0a0a08 100%)' }}>
+      style={{ background: 'linear-gradient(160deg, rgb(var(--noir-2)) 0%, rgb(var(--noir-3)) 60%, rgb(var(--noir)) 100%)' }}>
 
       {/* Texte */}
       <div className="flex flex-col justify-center px-8 md:px-16 py-20">
@@ -49,9 +50,11 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
 
       {/* Visuels */}
       <div className="hidden md:flex items-center justify-center gap-4 px-8 py-20">
-        {/* Grande photo à gauche */}
-        <div className="w-44 h-64 rounded-sm border border-or/25 overflow-hidden flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #1e1b14, #2a2518)' }}>
+        {/* Grande photo à gauche, cadrée façon scope cinéma */}
+        <CornerFrame visible className="w-44 h-64 rounded-sm border border-or/25 overflow-hidden flex-shrink-0"
+        >
+        <div className="w-full h-full"
+          style={{ background: 'linear-gradient(135deg, rgb(var(--noir-3)), rgb(var(--noir-2)))' }}>
           {main ? (
             <div className="relative w-full h-full group">
               <Image
@@ -65,8 +68,8 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
               <div className="absolute inset-0 bg-noir/10 group-hover:bg-noir/0 transition-colors duration-300" />
             </div>
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1" opacity="0.35">
+            <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-or/35">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                 <circle cx="12" cy="13" r="4"/>
               </svg>
@@ -74,11 +77,14 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
             </div>
           )}
         </div>
+          <div className="pointer-events-none absolute inset-x-0 top-3 h-[2px] bg-or/80" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-3 h-[2px] bg-or/80" />
+        </CornerFrame>
 
         {/* Deux petites photos à droite */}
         <div className="flex flex-col gap-4">
-          <div className="w-32 h-36 rounded-sm border border-or/15 overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, #181613, #201d15)' }}>
+          <CornerFrame className="w-32 h-36 rounded-sm border border-or/15 overflow-hidden">
+            <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, rgb(var(--noir-2)), rgb(var(--noir-3)))' }}>
             {second ? (
               <div className="relative w-full h-full group">
                 <Image
@@ -91,18 +97,19 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
                 <div className="absolute inset-0 bg-noir/10 group-hover:bg-noir/0 transition-colors duration-300" />
               </div>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1" opacity="0.25">
+              <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-or/25">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
-                <span className="text-xs tracking-widest text-or/25">PORTRAIT</span>
+                <span className="text-xs tracking-widest">PORTRAIT</span>
               </div>
             )}
-          </div>
+            </div>
+          </CornerFrame>
 
-          <div className="w-32 h-24 rounded-sm border border-or/10 overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, #141310, #1e1b13)' }}>
+          <CornerFrame className="w-32 h-24 rounded-sm border border-or/10 overflow-hidden">
+            <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, rgb(var(--noir)), rgb(var(--noir-2)))' }}>
             {third ? (
               <div className="relative w-full h-full group">
                 <Image
@@ -115,14 +122,15 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
                 <div className="absolute inset-0 bg-noir/10 group-hover:bg-noir/0 transition-colors duration-300" />
               </div>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1" opacity="0.2">
+              <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-or/20">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                 </svg>
-                <span className="text-xs tracking-widest text-or/20">MARIAGE</span>
+                <span className="text-xs tracking-widest">MARIAGE</span>
               </div>
             )}
-          </div>
+            </div>
+          </CornerFrame>
         </div>
       </div>
     </section>

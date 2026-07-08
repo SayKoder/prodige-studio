@@ -173,7 +173,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
   async function handleToggleHero(photo: GaleriePhoto) {
     const heroCount = photos.filter(p => p.hero).length
     if (!photo.hero && heroCount >= 3) {
-      showSuccess('Maximum 3 photos en hero — désélectionnes-en une d\'abord')
+      showSuccess("Maximum 3 photos en hero, désélectionnez-en une d'abord")
       return
     }
     const res = await fetch(`/api/galerie/${photo.id}`, {
@@ -194,8 +194,8 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
   ]
 
   return (
-    <div className="min-h-screen bg-noir">
-      {/* Header */}
+    <div data-theme="dark" className="min-h-screen bg-noir">
+      {/* Header : back-office volontairement toujours sombre, outil de travail et non vitrine */}
       <div className="border-b border-or/20 px-8 py-4 flex items-center justify-between">
         <div>
           <span className="font-serif text-lg font-light text-creme">PRODIGE</span>
@@ -226,7 +226,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
 
       <div className="px-8 py-8 max-w-4xl">
 
-        {/* ——— FORFAITS ——— */}
+        {/* === FORFAITS === */}
         {tab === 'forfaits' && (
           <div className="space-y-6">
             <p className="label-or">Modifier les forfaits, prix et détails</p>
@@ -299,7 +299,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
           </div>
         )}
 
-        {/* ——— TEXTES ——— */}
+        {/* === TEXTES === */}
         {tab === 'textes' && (
           <div className="space-y-4">
             <p className="label-or mb-4">Modifier les textes du portfolio</p>
@@ -321,7 +321,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
           </div>
         )}
 
-        {/* ——— GALERIE ——— */}
+        {/* === GALERIE === */}
         {tab === 'galerie' && (
           <div>
             <p className="label-or mb-4">Gérer les photos de la galerie</p>
@@ -342,7 +342,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
               <p className="text-sm text-gris-chaud">
                 {saving === 'upload' ? 'Upload en cours...' : 'Cliquer pour uploader une photo'}
               </p>
-              <p className="text-xs text-gris-tres-sombre mt-1">JPG, PNG, WebP — optimisé automatiquement</p>
+              <p className="text-xs text-gris-tres-sombre mt-1">JPG, PNG, WebP : optimisé automatiquement</p>
             </label>
 
             <div className="grid grid-cols-3 gap-3">

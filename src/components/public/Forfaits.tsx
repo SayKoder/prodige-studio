@@ -1,4 +1,5 @@
 import type { Forfait } from '@/lib/db'
+import CornerFrame from './CornerFrame'
 
 type ForfaitsProps = {
   forfaits: Forfait[]
@@ -6,7 +7,7 @@ type ForfaitsProps = {
 
 function CarteForfait({ forfait }: { forfait: Forfait }) {
   return (
-    <div className={`relative border rounded-sm p-6 transition-colors duration-200
+    <CornerFrame visible={forfait.populaire} className={`relative border rounded-sm p-6 transition-colors duration-200
       ${forfait.populaire
         ? 'border-or/50 bg-or/[0.03]'
         : 'border-or/20 hover:border-or/35'}`}
@@ -35,7 +36,7 @@ function CarteForfait({ forfait }: { forfait: Forfait }) {
           </li>
         ))}
       </ul>
-    </div>
+    </CornerFrame>
   )
 }
 

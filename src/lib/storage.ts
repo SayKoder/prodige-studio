@@ -22,6 +22,6 @@ export async function removeFile(storagePath: string): Promise<void> {
   try {
     await unlink(path.join(UPLOAD_DIR, path.basename(storagePath)))
   } catch {
-    // Fichier inexistant — on ignore
+    // Fichier inexistant, on ignore
   }
 }

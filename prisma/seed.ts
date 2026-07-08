@@ -22,17 +22,19 @@ async function main() {
 
   // ─── Textes du site ──────────────────────────────────────────────────────
   const textes = [
-    { cle: 'hero_titre_1',       valeur: "L'image au",                                                                            description: 'Héro — ligne 1 du titre'     },
-    { cle: 'hero_titre_2',       valeur: 'service',                                                                               description: 'Héro — mot doré central'     },
-    { cle: 'hero_titre_3',       valeur: 'de votre récit',                                                                        description: 'Héro — ligne 3 du titre'     },
-    { cle: 'hero_sous_titre',    valeur: 'Photographie haut de gamme pour les professionnels, portraits, mariages et événements qui comptent.', description: 'Héro — sous-titre' },
-    { cle: 'hero_localisation',  valeur: 'Reims · France · Europe',                                                               description: 'Héro — localisation'        },
-    { cle: 'about_phrase_1',     valeur: "Capturer l'authentique,",                                                               description: 'About — phrase ligne 1'      },
-    { cle: 'about_phrase_2',     valeur: 'sublimer l\'ordinaire.',                                                                description: 'About — phrase ligne 2'      },
-    { cle: 'about_annees',       valeur: '5+',                                                                                    description: 'About — années d\'expérience'},
-    { cle: 'about_couverture',   valeur: 'FR·EU',                                                                                 description: 'About — couverture géo'      },
-    { cle: 'footer_cta_titre',   valeur: 'Parlons de votre projet',                                                               description: 'Footer — titre CTA'          },
-    { cle: 'footer_cta_sous_titre', valeur: 'Envie de travailler ensemble ?',                                                     description: 'Footer — sous-titre'         },
+    { cle: 'hero_titre_1',       valeur: "L'image au",                                                                            description: 'Héro · ligne 1 du titre'     },
+    { cle: 'hero_titre_2',       valeur: 'service',                                                                               description: 'Héro · mot doré central'     },
+    { cle: 'hero_titre_3',       valeur: 'de votre récit',                                                                        description: 'Héro · ligne 3 du titre'     },
+    { cle: 'hero_sous_titre',    valeur: 'Photographie haut de gamme pour les professionnels, portraits, mariages et événements qui comptent.', description: 'Héro · sous-titre' },
+    { cle: 'hero_localisation',  valeur: 'Reims · France · Europe',                                                               description: 'Héro · localisation'        },
+    { cle: 'about_phrase_1',     valeur: "Capturer l'authentique,",                                                               description: 'About · phrase ligne 1'      },
+    { cle: 'about_phrase_2',     valeur: 'sublimer l\'ordinaire.',                                                                description: 'About · phrase ligne 2'      },
+    { cle: 'about_annees',       valeur: '5+',                                                                                    description: 'About · années d\'expérience'},
+    { cle: 'about_couverture',   valeur: 'FR·EU',                                                                                 description: 'About · couverture géo'      },
+    { cle: 'footer_cta_titre',   valeur: 'Parlons de votre projet',                                                               description: 'Footer · titre CTA'          },
+    { cle: 'footer_cta_sous_titre', valeur: 'Envie de travailler ensemble ?',                                                     description: 'Footer · sous-titre'         },
+    { cle: 'avis_titre',         valeur: 'Ce qu\'ils en disent',                                                                  description: 'Avis · titre de section'     },
+    { cle: 'avis_sous_titre',    valeur: 'Avis Google',                                                                           description: 'Avis · sur-titre'            },
   ]
 
   for (const t of textes) {
@@ -89,7 +91,7 @@ async function main() {
     },
     {
       categorie: 'grands_forfaits',
-      nom: "Mariage — Grain d'Or",
+      nom: "Mariage · Grain d'Or",
       sousTitre: 'Demi-journée',
       prix: '950€',
       details: ['Reportage photo complet', 'Montage soigné inclus', 'Couverture demi-journée'],
@@ -98,7 +100,7 @@ async function main() {
     },
     {
       categorie: 'grands_forfaits',
-      nom: "Mariage — L'Étoilé",
+      nom: "Mariage · L'Étoilé",
       sousTitre: 'Journée complète',
       prix: '1650€',
       details: ['Journée entière', 'Prises de vues spéciales', 'Montage soigné premium'],
@@ -113,7 +115,7 @@ async function main() {
     await prisma.forfait.createMany({ data: forfaits })
     console.log(`✓ ${forfaits.length} forfaits insérés`)
   } else {
-    console.log(`✓ Forfaits déjà présents (${count}) — seed ignoré`)
+    console.log(`✓ Forfaits déjà présents (${count}), seed ignoré`)
   }
 }
 
