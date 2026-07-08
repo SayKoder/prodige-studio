@@ -430,7 +430,7 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
 
       {cropping && (
         <div className="fixed inset-0 z-50 bg-noir/90 flex items-center justify-center p-6" onClick={() => setCropping(null)}>
-          <div className="bg-noir border border-or/20 rounded-sm p-6 max-w-lg w-full" onClick={e => e.stopPropagation()}>
+          <div className="bg-noir border border-or/20 rounded-sm p-6 max-w-lg w-full max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm text-creme truncate pr-4">Cadrage · {cropping.titre}</p>
               <button onClick={() => setCropping(null)} className="text-gris-chaud hover:text-creme text-lg leading-none flex-shrink-0">✕</button>
@@ -521,12 +521,13 @@ function CropStage({ photo, ratio, focal, onChange }: CropStageProps) {
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={() => setDragging(false)}
-      className="relative w-full select-none cursor-crosshair rounded-sm overflow-hidden border border-or/15 touch-none">
+      style={{ width: 'fit-content' }}
+      className="relative mx-auto select-none cursor-crosshair rounded-sm overflow-hidden border border-or/15 touch-none">
       <img
         src={photo.url_publique}
         alt={photo.titre}
         onLoad={mesurer}
-        className="w-full h-auto block pointer-events-none"
+        className="max-w-full max-h-[55vh] w-auto h-auto block pointer-events-none"
         draggable={false}
       />
       {stageSize.width > 0 && (
