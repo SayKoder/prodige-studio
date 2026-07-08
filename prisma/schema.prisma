@@ -52,6 +52,8 @@ model GaleriePhoto {
   actif       Boolean  @default(true)
   hero        Boolean  @default(false)
   ordre       Int      @default(0)
+  focalX      Float    @default(50)
+  focalY      Float    @default(50)
   createdAt   DateTime @default(now())
 
   @@map("galerie_photos")

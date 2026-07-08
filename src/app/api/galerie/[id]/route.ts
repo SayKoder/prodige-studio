@@ -8,7 +8,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id } = await params
-  const body = await req.json() as { categorie?: string; titre?: string; actif?: boolean; hero?: boolean }
+  const body = await req.json() as {
+    categorie?: string; titre?: string; actif?: boolean; hero?: boolean
+    focalX?: number; focalY?: number
+  }
+
+  const bornee = (n: number) => Math.min(100, Math.max(0, n))
 
   const photo = await prisma.galeriePhoto.update({
     where: { id },
@@ -17,6 +22,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(body.titre     !== undefined && { titre:     body.titre     }),
       ...(body.actif     !== undefined && { actif:     body.actif     }),
       ...(body.hero      !== undefined && { hero:      body.hero      }),
+      ...(typeof body.focalX === 'number' && Number.isFinite(body.focalX) && { focalX: bornee(body.focalX) }),
+      ...(typeof body.focalY === 'number' && Number.isFinite(body.focalY) && { focalY: bornee(body.focalY) }),
     },
   })
 

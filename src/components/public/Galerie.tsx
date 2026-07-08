@@ -63,6 +63,7 @@ export default function Galerie({ photos }: GalerieProps) {
                   alt={photo.titre}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  style={{ objectPosition: `${photo.focal_x}% ${photo.focal_y}%` }}
                   sizes={i === 0 ? '40vw' : '20vw'}
                 />
                 <div className="absolute inset-0 bg-noir/20 group-hover:bg-noir/10 transition-colors duration-300" />

@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
     storage_path: photo.storagePath,
     url_publique: photo.urlPublique,
     actif:        photo.actif,
+    hero:         photo.hero,
     ordre:        photo.ordre,
+    focal_x:      photo.focalX,
+    focal_y:      photo.focalY,
   })
 }

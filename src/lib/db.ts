@@ -39,6 +39,8 @@ export type GaleriePhoto = {
   actif: boolean
   hero: boolean
   ordre: number
+  focal_x: number
+  focal_y: number
 }
 
 // ─── Helpers de mapping (camelCase Prisma → snake_case UI) ───────────────────
@@ -59,8 +61,9 @@ function mapSiteTexte(t: {
 function mapPhoto(p: {
   id: string; titre: string; categorie: string; storagePath: string
   urlPublique: string; actif: boolean; hero: boolean; ordre: number
+  focalX: number; focalY: number
 }): GaleriePhoto {
-  return { id: p.id, titre: p.titre, categorie: p.categorie, storage_path: p.storagePath, url_publique: p.urlPublique, actif: p.actif, hero: p.hero, ordre: p.ordre }
+  return { id: p.id, titre: p.titre, categorie: p.categorie, storage_path: p.storagePath, url_publique: p.urlPublique, actif: p.actif, hero: p.hero, ordre: p.ordre, focal_x: p.focalX, focal_y: p.focalY }
 }
 
 // ─── Requêtes publiques ───────────────────────────────────────────────────────

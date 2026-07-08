@@ -61,6 +61,7 @@ export default function GalerieClient({ photos }: { photos: GaleriePhoto[] }) {
                 width={600}
                 height={400}
                 className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                style={{ objectPosition: `${photo.focal_x}% ${photo.focal_y}%` }}
               />
               <div className="absolute inset-0 bg-noir/0 group-hover:bg-noir/30 transition-colors duration-300" />
               <span className="absolute bottom-3 left-3 text-xs tracking-widest text-creme/0 group-hover:text-creme/70 transition-colors duration-300">

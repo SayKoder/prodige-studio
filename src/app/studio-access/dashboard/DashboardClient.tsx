@@ -187,6 +187,22 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
     }
   }
 
+  async function handleSetFocal(photo: GaleriePhoto, e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const focalX = Math.round(Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100)))
+    const focalY = Math.round(Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100)))
+
+    const res = await fetch(`/api/galerie/${photo.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ focalX, focalY }),
+    })
+    if (res.ok) {
+      setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, focal_x: focalX, focal_y: focalY } : p))
+      showSuccess('Cadrage mis à jour')
+    }
+  }
+
   const tabs: { key: Tab; label: string }[] = [
     { key: 'forfaits', label: 'Forfaits & Prix'   },
     { key: 'textes',   label: 'Textes du site'    },
@@ -345,38 +361,58 @@ export default function DashboardClient({ forfaits: initialForfaits, textes: ini
               <p className="text-xs text-gris-tres-sombre mt-1">JPG, PNG, WebP : optimisé automatiquement</p>
             </label>
 
+            <p className="text-xs text-gris-tres-sombre mb-3">
+              Survolez une photo puis cliquez dessus pour choisir la zone à toujours garder visible au recadrage (visage, sujet...).
+            </p>
+
             <div className="grid grid-cols-3 gap-3">
               {photos.map(photo => (
                 <div key={photo.id} className="relative border border-or/10 rounded-sm overflow-hidden aspect-square group">
-                  <img src={photo.url_publique} alt={photo.titre} className="w-full h-full object-cover" />
+                  <img
+                    src={photo.url_publique}
+                    alt={photo.titre}
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: `${photo.focal_x}% ${photo.focal_y}%` }}
+                  />
                   {photo.hero && (
                     <div className="absolute top-2 right-2 bg-or text-noir text-xs px-1.5 py-0.5 rounded-sm font-medium">
                       HERO
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-noir/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
-                    <select value={photo.categorie}
-                      onChange={e => handleUpdateCategorie(photo, e.target.value)}
-                      className="bg-noir border border-or/40 rounded-sm px-2 py-1 text-xs text-creme w-full focus:outline-none">
-                      <option value="portrait">Portrait</option>
-                      <option value="mariage">Mariage</option>
-                      <option value="evenement">Événement</option>
-                      <option value="pro">Pro / Corporate</option>
-                    </select>
-                    <button onClick={() => handleToggleHero(photo)}
-                      className={`text-xs px-2 py-1 rounded-sm w-full border transition-colors ${
-                        photo.hero
-                          ? 'text-or border-or/60 hover:bg-or/10'
-                          : 'text-gris-chaud border-or/20 hover:border-or/50 hover:text-or'
-                      }`}>
-                      {photo.hero ? '★ Retirer du hero' : '☆ Mettre en hero'}
-                    </button>
-                    <button onClick={() => handleDeletePhoto(photo)}
-                      className="text-xs text-red-400 hover:text-red-300 border border-red-400/50 px-2 py-1 rounded-sm w-full">
-                      Supprimer
-                    </button>
+                  {/* Marqueur du point focal actuel */}
+                  <div
+                    className="absolute w-3 h-3 -ml-1.5 -mt-1.5 rounded-full border-2 border-or bg-noir/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                    style={{ left: `${photo.focal_x}%`, top: `${photo.focal_y}%` }}
+                  />
+                  <div
+                    onClick={e => handleSetFocal(photo, e)}
+                    title="Cliquer pour choisir la zone à garder visible"
+                    className="absolute inset-0 bg-noir/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2 cursor-crosshair">
+                    <span className="text-xs text-creme/60 tracking-wide pointer-events-none">Cliquer pour cadrer</span>
+                    <div className="flex flex-col items-center gap-2 w-full mt-1" onClick={e => e.stopPropagation()}>
+                      <select value={photo.categorie}
+                        onChange={e => handleUpdateCategorie(photo, e.target.value)}
+                        className="bg-noir border border-or/40 rounded-sm px-2 py-1 text-xs text-creme w-full focus:outline-none">
+                        <option value="portrait">Portrait</option>
+                        <option value="mariage">Mariage</option>
+                        <option value="evenement">Événement</option>
+                        <option value="pro">Pro / Corporate</option>
+                      </select>
+                      <button onClick={() => handleToggleHero(photo)}
+                        className={`text-xs px-2 py-1 rounded-sm w-full border transition-colors ${
+                          photo.hero
+                            ? 'text-or border-or/60 hover:bg-or/10'
+                            : 'text-gris-chaud border-or/20 hover:border-or/50 hover:text-or'
+                        }`}>
+                        {photo.hero ? '★ Retirer du hero' : '☆ Mettre en hero'}
+                      </button>
+                      <button onClick={() => handleDeletePhoto(photo)}
+                        className="text-xs text-red-400 hover:text-red-300 border border-red-400/50 px-2 py-1 rounded-sm w-full">
+                        Supprimer
+                      </button>
+                    </div>
                   </div>
-                  <p className="absolute bottom-2 left-2 text-xs text-creme/60 truncate max-w-full px-1">{photo.titre}</p>
+                  <p className="absolute bottom-2 left-2 text-xs text-creme/60 truncate max-w-full px-1 pointer-events-none">{photo.titre}</p>
                 </div>
               ))}
 

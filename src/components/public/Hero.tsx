@@ -11,11 +11,12 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
   const [main, second, third] = heroPhotos
 
   return (
-    <section id="hero" className="grid grid-cols-1 md:grid-cols-2 min-h-screen pt-16"
+    <section id="hero" className="flex min-h-screen pt-16"
       style={{ background: 'linear-gradient(160deg, rgb(var(--noir-2)) 0%, rgb(var(--noir-3)) 60%, rgb(var(--noir)) 100%)' }}>
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col md:flex-row">
 
       {/* Texte */}
-      <div className="flex flex-col justify-center px-8 md:px-16 py-20">
+      <div className="flex flex-col justify-center px-8 md:pl-16 md:pr-10 py-20 md:flex-shrink-0">
         <p className="label-or mb-5">{textes.hero_localisation ?? 'Reims · France · Europe'}</p>
 
         <h1 className="font-serif font-light leading-tight text-creme" style={{ fontSize: 'clamp(40px, 6vw, 64px)' }}>
@@ -49,9 +50,9 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
       </div>
 
       {/* Visuels */}
-      <div className="hidden md:flex items-center justify-center gap-4 px-8 py-20">
+      <div className="hidden md:flex flex-1 items-center gap-5 pr-8 lg:pr-16 py-16">
         {/* Grande photo à gauche, cadrée façon scope cinéma */}
-        <CornerFrame visible className="w-44 h-64 rounded-sm border border-or/25 overflow-hidden flex-shrink-0"
+        <CornerFrame visible className="w-56 h-72 lg:w-64 lg:h-80 rounded-sm border border-or/25 overflow-hidden flex-shrink-0"
         >
         <div className="w-full h-full"
           style={{ background: 'linear-gradient(135deg, rgb(var(--noir-3)), rgb(var(--noir-2)))' }}>
@@ -62,7 +63,8 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
                 alt={main.titre}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="176px"
+                style={{ objectPosition: `${main.focal_x}% ${main.focal_y}%` }}
+                sizes="256px"
                 priority
               />
               <div className="absolute inset-0 bg-noir/10 group-hover:bg-noir/0 transition-colors duration-300" />
@@ -82,8 +84,8 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
         </CornerFrame>
 
         {/* Deux petites photos à droite */}
-        <div className="flex flex-col gap-4">
-          <CornerFrame className="w-32 h-36 rounded-sm border border-or/15 overflow-hidden">
+        <div className="flex flex-col gap-5">
+          <CornerFrame className="w-40 h-44 lg:w-44 lg:h-48 rounded-sm border border-or/15 overflow-hidden">
             <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, rgb(var(--noir-2)), rgb(var(--noir-3)))' }}>
             {second ? (
               <div className="relative w-full h-full group">
@@ -92,7 +94,8 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
                   alt={second.titre}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  sizes="128px"
+                  style={{ objectPosition: `${second.focal_x}% ${second.focal_y}%` }}
+                  sizes="176px"
                 />
                 <div className="absolute inset-0 bg-noir/10 group-hover:bg-noir/0 transition-colors duration-300" />
               </div>
@@ -108,7 +111,7 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
             </div>
           </CornerFrame>
 
-          <CornerFrame className="w-32 h-24 rounded-sm border border-or/10 overflow-hidden">
+          <CornerFrame className="w-40 h-32 lg:w-44 lg:h-36 rounded-sm border border-or/10 overflow-hidden">
             <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, rgb(var(--noir)), rgb(var(--noir-2)))' }}>
             {third ? (
               <div className="relative w-full h-full group">
@@ -117,7 +120,8 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
                   alt={third.titre}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  sizes="128px"
+                  style={{ objectPosition: `${third.focal_x}% ${third.focal_y}%` }}
+                  sizes="176px"
                 />
                 <div className="absolute inset-0 bg-noir/10 group-hover:bg-noir/0 transition-colors duration-300" />
               </div>
@@ -133,6 +137,7 @@ export default function Hero({ textes, heroPhotos }: HeroProps) {
           </CornerFrame>
         </div>
       </div>
+    </div>
     </section>
   )
 }
